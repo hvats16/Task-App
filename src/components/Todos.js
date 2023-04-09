@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../CSS/Todo.css";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsCheckLg } from "react-icons/bs";
-// import { FaRegHandPointUp } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
 import { Dropdown } from "react-bootstrap";
 
 function Todos() {
@@ -12,21 +12,50 @@ function Todos() {
   const [dueDate, setDueDate] = useState("");
   const [completedTodos, setCompletedTodos] = useState([]);
   const [isCompletedScreen, setIsCompletedScreen] = useState(false);
+  const [toggleSubmit, setToggleSubmit] = useState(true);
+  const [isEditItem, setIsEditItem] = useState(null);
 
   const handleAddNewToDo = () => {
-    let newToDoObj = {
-      title: newTodoTitle,
-      description: newDescription,
-      date: dueDate,
-    };
-    // console.log(newToDoObj);
-    let updatedTodoArr = [...allTodos];
-    updatedTodoArr.push(newToDoObj);
-    // console.log (updatedTodoArr);
-    setAllTodos(updatedTodoArr);
-    localStorage.setItem("todolist", JSON.stringify(updatedTodoArr));
-    setNewDescription("");
-    setNewTodoTitle("");
+    if (newTodoTitle && newDescription && dueDate && !toggleSubmit) {
+      setAllTodos(
+        allTodos.map((elem, index) => {
+          if (index === isEditItem) {
+            return {
+              ...elem,
+              title: newTodoTitle,
+              description: newDescription,
+              date: dueDate,
+            };
+          }
+          return elem;
+        })
+      );
+      // let updatedTodoArr = [...allTodos];
+      // setAllTodos(updatedTodoArr);
+      // localStorage.setItem("todolist", JSON.stringify(updatedTodoArr));
+      // setIsEditItem(null);
+      console.log(allTodos);
+      setNewDescription("");
+      setNewTodoTitle("");
+      setDueDate("");
+      setToggleSubmit(true);
+      // console.log(editTodo);
+    } else {
+      let newToDoObj = {
+        title: newTodoTitle,
+        description: newDescription,
+        date: dueDate,
+      };
+      // console.log(newToDoObj);
+      let updatedTodoArr = [...allTodos];
+      updatedTodoArr.push(newToDoObj);
+      // console.log (updatedTodoArr);
+      setAllTodos(updatedTodoArr);
+      localStorage.setItem("todolist", JSON.stringify(updatedTodoArr));
+      setNewDescription("");
+      setNewTodoTitle("");
+      setDueDate("");
+    }
   };
 
   useEffect(() => {
@@ -55,13 +84,26 @@ function Todos() {
 
   const handleCompletedTodoDelete = (index) => {
     let reducedCompletedTodos = [...completedTodos];
-    reducedCompletedTodos.splice(index);
+    reducedCompletedTodos.splice(index, 1);
     // console.log (reducedCompletedTodos);
     localStorage.setItem(
       "completedTodos",
       JSON.stringify(reducedCompletedTodos)
     );
     setCompletedTodos(reducedCompletedTodos);
+  };
+  const handleEdit = (title, id) => {
+    let editItem = allTodos.find((elem, index) => {
+      return index === id;
+    });
+    // console.log(editItem);
+    setToggleSubmit(false);
+    // let filteredTodo = allTodos.filter((todo) => todo.title === title);
+    // setToggleSubmit(false);
+    setNewTodoTitle(editItem.title);
+    setNewDescription(editItem.description);
+    setDueDate(editItem.date);
+    setIsEditItem(id);
   };
 
   const handleComplete = (index) => {
@@ -147,16 +189,29 @@ function Todos() {
             />
           </div>
           <div className="todo-input-item">
-            <button
-              className="primary-btn"
-              type="button"
-              onClick={handleAddNewToDo}
-              disabled={
-                newTodoTitle === "" || newDescription === "" || dueDate === ""
-              }
-            >
-              Add
-            </button>
+            {toggleSubmit ? (
+              <button
+                className="primary-btn"
+                type="button"
+                onClick={handleAddNewToDo}
+                disabled={
+                  newTodoTitle === "" || newDescription === "" || dueDate === ""
+                }
+              >
+                Add
+              </button>
+            ) : (
+              <button
+                className="primary-btn"
+                type="button"
+                onClick={handleAddNewToDo}
+                disabled={
+                  newTodoTitle === "" || newDescription === "" || dueDate === ""
+                }
+              >
+                Edit
+              </button>
+            )}
           </div>
         </div>
         <div className="btn-area">
@@ -195,6 +250,12 @@ function Todos() {
                   <p>Due-Date: {item.date}</p>
                 </div>
                 <div>
+                  <FiEdit
+                    className="edit-icon"
+                    title="edit"
+                    onClick={() => handleEdit(item.title, index)}
+                  />
+
                   <AiOutlineDelete
                     title="Delete?"
                     className="icon"

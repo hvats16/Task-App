@@ -133,6 +133,15 @@ h1 {
 .check-icon:hover {
   color: rgb(4, 192, 104);
 }
+.edit-icon {
+  font-size: 22px;
+  cursor: pointer;
+  color: rgb(0, 230, 122);
+  margin-left: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-right: 10px;
+}
 
 .icon-modal {
   font-size: 22px;
