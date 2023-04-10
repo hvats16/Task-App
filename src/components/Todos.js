@@ -30,10 +30,6 @@ function Todos() {
           return elem;
         })
       );
-      // let updatedTodoArr = [...allTodos];
-      // setAllTodos(updatedTodoArr);
-      // localStorage.setItem("todolist", JSON.stringify(updatedTodoArr));
-      // setIsEditItem(null);
       console.log(allTodos);
       setNewDescription("");
       setNewTodoTitle("");
